@@ -42,7 +42,7 @@ export default async function(req, res) {
             console.log(e)
         );
 
-        return res.status(200).send({ original: originalImg, thumbnail: thumbnailImg });
+        return res.status(200).send({ original: originalImg[0], thumbnail: thumbnailImg[0] });
     }
     return res.status(400).send({message: "You need to pass both suffix and base64 variables.", suffix: suffix, base64: base64});
 }
