@@ -1,0 +1,47 @@
+---
+# API KEY
+apiVersion: passport/v1
+kind: ApiKey
+metadata:
+  name: thumbnailer-apikey
+spec:
+  name: Secret Api Key For Thumbnailer Asset
+  policies:
+    - StorageFullAccess
+---
+# FUNCTION QR Code
+apiVersion: function/v1
+kind: Function
+metadata:
+  name: function-thumbnailer
+spec:
+  title: Thumbnailer
+  description: "Makes thumbnail and save both images to storage"
+  timeout: 30
+  code: ./functions/thumbnailer.js
+  runtime:
+    name: Node
+    language: Javascript
+  environment:
+    - name: APIKEY
+      valueFrom: 
+        resourceFieldRef: 
+            apiKeyName: thumbnailer-apikey
+  dependency:
+    - name: "image-thumbnail"
+      version: latest
+    - name: "@spica-devkit/storage"
+      version: latest
+---
+# TRIGGER - FIREBASE
+apiVersion: function/v1
+kind: Trigger
+metadata:
+  name: trigger-qrcode-1
+spec:
+  name: default
+  func: function-thumbnailer
+  type: bucket
+  httpOptions:
+    method: Post
+    path: /thumbnailer
